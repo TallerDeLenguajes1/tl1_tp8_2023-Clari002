@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 // Estructura de datos para representar una tarea
 struct Tarea
@@ -181,7 +182,36 @@ class Program
                 Console.WriteLine("Valor ingresado no valido");
             }    
         }
-        
+
+
+       //listar archivos en csv
+       //obtener el path de la carpeta ingresado por el ususario
+       Console.WriteLine("Ingrese la ruta de la carpeta: ");
+       string carpetaPath = Console.ReadLine();
+
+       //obtener la lista de archivos en la carpeta
+       string[] NombresArchivos = Directory.GetFiles(carpetaPath);
+
+       //crear una lista para almacenar los datos del indice, nombre y extension del archivo
+       var data =  NombresArchivos.Select((file, index) =>
+       {
+        string fileName = Path.GetFileNameWithoutExtension(file);
+        string extension = Path.GetExtension(file);
+        return new {Index = index + 1, FileName = fileName, Extension = extension};
+       }).ToList();
+
+       //crear el archivo CSV y escribir los datos
+       string csvPath = Path.Combine(carpetaPath, "index.csv");
+       using (StreamWriter escribir = new StreamWriter(csvPath))
+       {
+        escribir.WriteLine("Indice,Nombre,Extencion");//Escribir la fila de encabezado
+        foreach (var item in data)
+        {
+            escribir.WriteLine($"{item.Index},{item.FileName},{item.Extension}");
+        }
+       }
+
+       Console.WriteLine("El archivo index.csv se ha creado exitosasmente.");
     
 }
 }
